@@ -40,9 +40,10 @@ function TokenVis({ tokenTexts }) {
   );
 }
 
-function TokenColumn({ provider, label, models, count, source, pending, note, children }) {
+function TokenColumn({ provider, label, models, count, source, pending, note, charCount, children }) {
   const badge = pending ? "pending" : source === "tiktoken" || source === "api" ? "verified" : "fallback";
   const badgeLabel = pending ? "counting..." : source === "tiktoken" ? "exact (tiktoken)" : source === "api" ? "exact (API)" : "estimate";
+  const ratio = count > 0 && charCount > 0 ? (charCount / count).toFixed(1) : null;
 
   return React.createElement("div", { className: "token-col" },
     React.createElement("div", { className: "token-col-header" },
@@ -54,7 +55,7 @@ function TokenColumn({ provider, label, models, count, source, pending, note, ch
       React.createElement("div", { className: `token-col-count${pending ? " pending" : ""}` }, fmtInt(count)),
       React.createElement("div", { className: "token-col-meta" },
         React.createElement("span", { className: `tt-badge tt-badge-${badge}` }, badgeLabel),
-        count > 0 && !pending && React.createElement("span", null, ` · ${(count / Math.max(1, count)).toFixed(1)} char/tok ratio: ${(document.getElementById("prompt-input")?.value?.length / Math.max(1, count) || 0).toFixed(1)}`)
+        ratio && !pending && React.createElement("span", null, ` · ${ratio} chars/token`)
       ),
       note && React.createElement("div", { className: "token-col-note" }, note)
     )
@@ -89,10 +90,11 @@ function ComparisonStrip({ openai, anthropic, google }) {
 }
 
 function CostSection({ inputTokens, requestsPerDay, setRequestsPerDay, outputTokens, setOutputTokens, cacheEnabled, setCacheEnabled }) {
+  const hasInput = inputTokens > 0;
   const cachePct = cacheEnabled ? 70 : 0;
   const costs = MODELS.map(m => ({
     ...m,
-    monthly: computeMonthlyCost({ model: m, inputTokens, outputTokens, requestsPerDay, cachePct }),
+    monthly: hasInput ? computeMonthlyCost({ model: m, inputTokens, outputTokens, requestsPerDay, cachePct }) : 0,
   })).sort((a, b) => a.monthly - b.monthly);
 
   const cheapestCost = costs[0]?.monthly ?? 0;
@@ -214,7 +216,7 @@ function AdvisorSection({ text, setText, inputTokens, requestsPerDay, outputToke
 }
 
 function App() {
-  const [text, setText] = React.useState("");
+  const [text, setText] = React.useState(PLACEHOLDER_PROMPT);
   const [requestsPerDay, setRequestsPerDay] = React.useState(1000);
   const [outputTokens, setOutputTokens] = React.useState(500);
   const [cacheEnabled, setCacheEnabled] = React.useState(true);
@@ -266,11 +268,18 @@ function App() {
             onChange: (e) => setText(e.target.value),
             maxLength: 10000,
           }),
-          !text && React.createElement("button", {
-            style: { marginTop: "8px", background: "transparent", border: "1px solid var(--border)", color: "var(--accent)",
-              borderRadius: "6px", padding: "6px 14px", fontFamily: "var(--font-mono)", fontSize: "11px", cursor: "pointer" },
-            onClick: () => setText(PLACEHOLDER_PROMPT),
-          }, "Try example prompt")
+          React.createElement("div", { style: { marginTop: "8px", display: "flex", gap: "8px" } },
+            text && React.createElement("button", {
+              style: { background: "transparent", border: "1px solid var(--border)", color: "var(--text-dim)",
+                borderRadius: "6px", padding: "6px 14px", fontFamily: "var(--font-mono)", fontSize: "11px", cursor: "pointer" },
+              onClick: () => setText(""),
+            }, "Clear"),
+            text !== PLACEHOLDER_PROMPT && React.createElement("button", {
+              style: { background: "transparent", border: "1px solid var(--border)", color: "var(--accent)",
+                borderRadius: "6px", padding: "6px 14px", fontFamily: "var(--font-mono)", fontSize: "11px", cursor: "pointer" },
+              onClick: () => setText(PLACEHOLDER_PROMPT),
+            }, "Load example prompt")
+          )
         )
       ),
 
@@ -283,17 +292,20 @@ function App() {
         React.createElement(TokenColumn, {
           provider: "openai", label: "OpenAI", models: "GPT-5.4 / GPT-5.5",
           count: counts.openai.tokens, source: counts.openai.source, pending: counts.openai.pending,
+          charCount: text.length,
         },
           React.createElement(TokenVis, { tokenTexts: counts.tokenTexts })
         ),
         React.createElement(TokenColumn, {
           provider: "anthropic", label: "Anthropic", models: "Opus 4.7 / Sonnet 4.6",
           count: counts.anthropic.tokens, source: counts.anthropic.source, pending: counts.anthropic.pending,
+          charCount: text.length,
           note: "Anthropic doesn’t publish per-token breakdown — count is from official API",
         }),
         React.createElement(TokenColumn, {
           provider: "google", label: "Google", models: "Gemini 2.5 Pro",
           count: counts.google.tokens, source: counts.google.source, pending: counts.google.pending,
+          charCount: text.length,
           note: "Count from Google’s countTokens API",
         })
       ),
