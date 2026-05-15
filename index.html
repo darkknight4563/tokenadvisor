@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>TokenAdvisor — See where your AI tokens go. Learn what to cut.</title>
+  <meta name="description" content="Paste your prompt. See tokens across Claude, GPT, and Gemini side-by-side. Get specific savings recommendations with dollar amounts at your volume. Free, no signup."/>
+  <meta name="theme-color" content="#0A0E1A"/>
+  <link rel="canonical" href="https://tokenadvisor.dev/"/>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="TokenAdvisor — Free LLM token analyzer with savings advice"/>
+  <meta property="og:description" content="See where your AI tokens go across Claude, GPT, and Gemini. Get specific recommendations on what to cut. Free, no signup."/>
+  <meta property="og:image" content="https://tokenadvisor.dev/og.png"/>
+  <meta property="og:image:type" content="image/png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:url" content="https://tokenadvisor.dev/"/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:image" content="https://tokenadvisor.dev/og.png"/>
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%234ECDC4'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='18' font-weight='700' text-anchor='middle' fill='%230A0E1A'%3ET%3C/text%3E%3C/svg%3E"/>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="styles.css?v=1"/>
+
+  <!-- JSON-LD SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "TokenAdvisor",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "url": "https://tokenadvisor.dev",
+    "description": "Free LLM token analyzer with savings advice. Compare tokens across Claude, GPT, and Gemini.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <!-- JSON-LD FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a token in an LLM API?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A token is a chunk of text that language models process. It can be a word, part of a word, or punctuation. Models like Claude, GPT, and Gemini each use different tokenizers, so the same text produces different token counts — and different costs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do Claude, GPT, and Gemini have different token counts for the same text?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Each provider uses a different tokenizer algorithm. OpenAI uses o200k_base (tiktoken), Anthropic uses their own proprietary tokenizer, and Google uses SentencePiece. These split text into tokens differently, resulting in different counts and costs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I reduce my API costs?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Remove verbose filler words, use prompt caching, specify output formats to reduce output tokens, trim few-shot examples to 2-3, and remove duplicate instructions. TokenAdvisor's Advisor section identifies these patterns automatically."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is TokenAdvisor free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, completely free with no signup required. Token counting for OpenAI models happens entirely in your browser. Claude and Gemini counts use official free APIs proxied through our server."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does TokenAdvisor send my prompts anywhere?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "OpenAI token counting happens 100% client-side using tiktoken. For Claude and Gemini counts, your text is sent to their respective count_tokens APIs (not the chat API) via our proxy — these APIs only count tokens and do not store or learn from your content."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- tiktoken ESM loader -->
+  <script type="module">
+    window.__loadTiktoken = () => import("https://esm.sh/js-tiktoken@1.0.15?bundle&target=es2022");
+  </script>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- SEO content: static HTML visible to crawlers and with JS disabled -->
+  <section class="seo-section" id="about">
+    <h2>Why Tokens Matter</h2>
+    <div class="prose">
+      <p>Every API call to an LLM is billed by <strong>tokens</strong> — chunks of text that the model reads and generates. A single word might be one token or several, depending on the provider's tokenizer. At scale, the difference between 100 and 130 tokens per request is thousands of dollars per month.</p>
+      <p>Most developers don't realize that <strong>the same prompt costs different amounts</strong> across Claude, GPT, and Gemini — not just because of pricing, but because each provider tokenizes your text differently. A prompt that's 142 tokens on GPT might be 156 tokens on Claude.</p>
+      <p>TokenAdvisor shows you exactly where your tokens go. It counts tokens using the <strong>same official methods the APIs use</strong> — tiktoken for OpenAI (client-side, exact), Anthropic's count_tokens API, and Google's countTokens API. Then it analyzes your prompt for common patterns that waste tokens and translates the waste into specific dollar amounts at your volume.</p>
+      <p>The result: you see what to cut, how much you'll save, and which provider is cheapest for your specific prompt. No signup, no data stored, completely free.</p>
+      <p>For full pricing comparison across 20+ models with batch discounts and prompt caching calculations, see <a href="https://realaicost.com">RealAICost</a>.</p>
+    </div>
+
+    <h2 style="margin-top: 40px;">Frequently Asked Questions</h2>
+    <details>
+      <summary>What is a token in an LLM API?</summary>
+      <div class="answer">A token is a chunk of text that language models process. It can be a word, part of a word, or punctuation. Models like Claude, GPT, and Gemini each use different tokenizers, so the same text produces different token counts — and different costs. For example, "tokenization" might be split into ["token", "ization"] (2 tokens) by one model and ["tok", "en", "ization"] (3 tokens) by another.</div>
+    </details>
+    <details>
+      <summary>Why do Claude, GPT, and Gemini have different token counts for the same text?</summary>
+      <div class="answer">Each provider uses a different tokenizer algorithm. OpenAI uses o200k_base (tiktoken), Anthropic uses their own proprietary tokenizer, and Google uses SentencePiece. These algorithms decide how to split text into tokens differently, resulting in different counts for the same input. This means the same prompt can cost more or less depending on which provider you use.</div>
+    </details>
+    <details>
+      <summary>How do I reduce my API costs?</summary>
+      <div class="answer">The most effective strategies are: (1) Remove verbose filler like "I would like you to please ensure that" — models respond the same to concise instructions. (2) Enable prompt caching to avoid re-processing repeated system prompts. (3) Specify output formats (JSON, XML tags) to prevent rambling responses. (4) Reduce few-shot examples to 2-3 instead of 5+. (5) Remove duplicate instructions that restate the same thing. TokenAdvisor's Advisor section identifies these patterns automatically in your prompt.</div>
+    </details>
+    <details>
+      <summary>Is this tool free?</summary>
+      <div class="answer">Yes, TokenAdvisor is completely free with no signup required. OpenAI token counting happens entirely in your browser using the tiktoken library. Claude and Gemini counts use their official free token-counting APIs, proxied through our server to protect the API key.</div>
+    </details>
+    <details>
+      <summary>Does TokenAdvisor send my prompts anywhere?</summary>
+      <div class="answer">OpenAI token counting is 100% client-side — your text never leaves your browser. For Claude and Gemini counts, your text is sent to their respective count_tokens APIs via our Cloudflare proxy. These are dedicated counting endpoints (not the chat/completion API) that only return a number — they do not store, log, or train on your content. We don't store your prompts either.</div>
+    </details>
+  </section>
+
+  <script type="text/babel" src="data.jsx"></script>
+  <script type="text/babel" src="tokenizer.jsx"></script>
+  <script type="text/babel" src="advisor.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
