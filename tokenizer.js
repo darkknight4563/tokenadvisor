@@ -71,9 +71,8 @@ function decodeTokenTexts(encoded, encoder) {
   const result = [];
   for (let i = 0; i < encoded.length; i++) {
     try {
-      const bytes = encoder.decode([encoded[i]]);
-      const text = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
-      result.push(text);
+      const text = encoder.decode([encoded[i]]);
+      result.push(typeof text === "string" ? text : new TextDecoder("utf-8", { fatal: false }).decode(text));
     } catch {
       result.push("?");
     }
