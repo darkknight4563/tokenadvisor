@@ -20,6 +20,8 @@
   <meta property="og:url" content="https://tokenadvisor.dev/"/>
   <meta property="og:type" content="website"/>
   <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="TokenAdvisor — Free LLM token analyzer with savings advice"/>
+  <meta name="twitter:description" content="See where your AI tokens go across Claude, GPT, and Gemini. Get specific recommendations on what to cut. Free, no signup."/>
   <meta name="twitter:image" content="https://tokenadvisor.dev/og.png"/>
 
   <!-- Favicon -->
@@ -102,9 +104,9 @@
   </script>
 
   <!-- React + Babel -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <!-- Babel standalone removed — JSX files pre-compiled to plain JS -->
 </head>
 <body>
   <div id="root"></div>
@@ -143,9 +145,9 @@
     </details>
   </section>
 
-  <script type="text/babel" src="data.jsx"></script>
-  <script type="text/babel" src="tokenizer.jsx"></script>
-  <script type="text/babel" src="advisor.jsx"></script>
-  <script type="text/babel" src="app.jsx"></script>
+  <script src="data.js"></script>
+  <script src="tokenizer.js"></script>
+  <script src="advisor.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
