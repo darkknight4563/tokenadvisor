@@ -231,27 +231,17 @@ function App() {
         React.createElement("span", { className: "brand-name" }, "TokenAdvisor")
       ),
       React.createElement("nav", { className: "topbar-links" },
+        React.createElement("a", { href: "#gateway" }, "Gateway"),
+        React.createElement("a", { href: "#pricing" }, "Pricing"),
+        React.createElement("a", { href: "#prompt-input" }, "Free analyzer"),
         React.createElement("a", { href: "https://realaicost.com", target: "_blank", rel: "noopener" }, "RealAICost"),
         React.createElement("a", { href: "https://github.com/darkknight4563/tokenadvisor", target: "_blank", rel: "noopener" }, "GitHub")
       )
     ),
 
     React.createElement("main", { className: "page" },
-      // Hero
-      React.createElement("div", { className: "hero" },
-        React.createElement("div", { className: "eyebrow" },
-          React.createElement("span", { className: "dot" }),
-          "Free · No signup · No data stored"
-        ),
-        React.createElement("h1", { className: "hero-title" },
-          "See where your ", React.createElement("span", { className: "accent" }, "tokens"), " go.",
-          React.createElement("br"),
-          "Learn what to ", React.createElement("span", { className: "accent" }, "cut"), "."
-        ),
-        React.createElement("p", { className: "hero-sub" },
-          "Paste your prompt. Compare token counts across Claude, GPT, and Gemini side-by-side. Get specific savings recommendations with dollar amounts at your volume."
-        )
-      ),
+      // Gateway (the product) — hero, how it works, pricing. Defined in gateway-landing.js.
+      React.createElement(window.GatewaySection),
 
       // Prompt input
       React.createElement("div", { className: "prompt-panel" },
@@ -329,7 +319,7 @@ function App() {
 
     // Footer
     React.createElement("footer", { className: "footer" },
-      React.createElement("span", null, "© 2025 TokenAdvisor · Built by ",
+      React.createElement("span", null, "© 2026 TokenAdvisor · Built by ",
         React.createElement("a", { href: "https://realaicost.com", target: "_blank", rel: "noopener" }, "the RealAICost team")),
       React.createElement("span", null,
         React.createElement("a", { href: "https://realaicost.com", target: "_blank", rel: "noopener" }, "Full cost calculator →"))

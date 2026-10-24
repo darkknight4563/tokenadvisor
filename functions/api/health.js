@@ -5,6 +5,7 @@ export async function onRequestGet({ env }) {
     bindings: {
       anthropic: !!env.ANTHROPIC_API_KEY,
       google: !!env.GOOGLE_API_KEY,
+      gateway_db: !!env.DB,
     },
     runtime: "cloudflare-pages-functions",
     version: "v0.1.0",
